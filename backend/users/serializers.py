@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from django.core import exceptions
+from django.core.validators import validate_email
 from django.utils.translation import gettext_lazy as _
 
 from users.models import UserProfile
@@ -50,3 +52,40 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data.get('password'),
         )
         return user
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    """
+    Serializer for sending reset password link to given email.
+    """
+    email = serializers.EmailField(max_length=255, write_only=True, required=True)
+
+    def validate_email(self, value):
+        errors = dict()
+        try:
+            validate_email(value)
+        except exceptions.ValidationError as e:
+            errors['email'] = list(e.message)
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
+        return value
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """
+    Serializer for password change endpoint.
+    """
+    password = serializers.CharField(max_length=128, required=True)
+    password2 = serializers.CharField(max_length=128, required=True)
+
+    def validate(self, data):
+        """
+        Check if the given passwords are the same
+        """
+        if data['password'] != data['password2']:
+            raise serializers.ValidationError({'password2': _("Passwords are not the same.")})
+        elif len(data['password']) > 128 or len(data['password2']) > 128:
+            raise serializers.ValidationError("Passwords are too long")
+        return data
