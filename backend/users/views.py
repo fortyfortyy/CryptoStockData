@@ -2,14 +2,18 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer
+from rest_framework_simplejwt.exceptions import AuthenticationFailed, InvalidToken, TokenError
+from rest_framework_simplejwt.views import TokenViewBase, TokenRefreshView
 
 from django.http import HttpResponseRedirect
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import smart_str
 
 from users.utils import account_token
+from users.utils import send_reset_password_email
 from users.models import UserProfile
-from users.serializers import RegisterSerializer
+from users.serializers import CustomTokenObtainPairSerializer, ForgotPasswordSerializer, \
+    ChangePasswordSerializer, RegisterSerializer, InActiveUser
 
 
 class RegisterUserView(generics.CreateAPIView):
@@ -63,3 +67,42 @@ class ActivateAccountView(APIView):
 
 
 activate_account_view = ActivateAccountView.as_view()
+
+
+class CustomTokenObtainPairView(TokenViewBase):
+    """
+    Takes a set of user credentials and returns an access and refresh JSON web
+    token pair to prove the authentication of those credentials.
+    Returns HTTP 406 when user is inactive and HTTP 401 when login credentials are invalid.
+    """
+    serializer_class = CustomTokenObtainPairSerializer
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect('/#/login')
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except AuthenticationFailed:
+            raise InActiveUser()
+        except TokenError:
+            raise InvalidToken()
+
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+
+custom_token_obtain_view = CustomTokenObtainPairView.as_view()
+
+
+class CustomTokenRefreshView(TokenRefreshView):
+    """
+    Refresh given old token with the new one
+    method get() is not allowed.
+    """
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect('/#/404')
+
+
+custom_token_refresh_view = CustomTokenRefreshView.as_view()
