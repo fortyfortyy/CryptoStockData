@@ -37,6 +37,94 @@ class RegisterUserView(generics.CreateAPIView):
 register_user_view = RegisterUserView.as_view()
 
 
+class ForgotPasswordView(generics.CreateAPIView):
+    """
+    Search user by given email, then send reset link
+    """
+    model = UserProfile
+    serializer_class = ForgotPasswordSerializer
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect('/#/reset/password/')
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            email = serializer.validated_data['email']
+            try:
+                profile = self.model.objects.get(email=email)
+            except self.model.DoesNotExist:
+                profile = None
+
+            if profile:
+                send_reset_password_email(profile)
+
+                return Response({'detail': 'Please check email for the next steps.'}, status=status.HTTP_200_OK,
+                                content_type='application/javascript')
+
+        headers = self.get_success_headers(serializer.data)
+        return Response({'detail': 'Please check email for the next steps.'}, status=status.HTTP_200_OK,
+                        headers=headers,
+                        content_type='application/javascript')
+
+
+forgot_password_view = ForgotPasswordView.as_view()
+
+
+class SetPasswordView(generics.UpdateAPIView):
+    """
+    Checks if token and uidb64 is valid for a specific user, then set the new passwd
+    """
+    queryset = UserProfile
+    token_generator = account_token
+    serializer_class = ChangePasswordSerializer
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect(f"/#/account/set/password/{kwargs['uidb64']}/{kwargs['token']}/")
+
+    def get_user(self, uidb64=None, queryset=None):
+        if uidb64 is None or queryset is None:
+            return None
+
+        try:
+            # urlsafe_base64_decode() decodes to bytestring
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = queryset.objects.get(id=uid)
+        except (TypeError, ValueError, OverflowError, queryset.DoesNotExist):
+            user = None
+
+        return user
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        user = self.get_user(self.kwargs.get('uidb64', None), queryset)
+        if user is not None:
+            token = self.kwargs.get('token', None)
+            if token and self.token_generator.check_token(user=user, token=token):
+                return user
+
+        user = None
+        return user
+
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        if user is None:
+            return Response({"invalid": "Invalid token or uidb"}, status=status.HTTP_400_BAD_REQUEST,
+                            content_type='application/javascript')
+
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            user.set_password(serializer.data.get('password'))
+            user.save()
+            return Response({"detail": "Password has been updated."}, status=status.HTTP_200_OK,
+                            content_type='application/javascript')
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST, content_type='application/javascript')
+
+
+set_password_view = SetPasswordView.as_view()
+
+
 class ActivateAccountView(APIView):
     """
     Checks whether the link is valid for the given user.
