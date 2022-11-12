@@ -165,8 +165,8 @@ class CustomTokenObtainPairView(TokenViewBase):
     """
     serializer_class = CustomTokenObtainPairSerializer
 
-    def get(self, request, *args, **kwargs):
-        return HttpResponseRedirect('/#/login')
+    # def get(self, request, *args, **kwargs):
+    #     return HttpResponseRedirect('/#/login')
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
