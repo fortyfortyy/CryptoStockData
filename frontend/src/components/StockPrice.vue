@@ -1,10 +1,9 @@
 <template>
   <div class="stock-container">
     <div class="box">
-      <p class="" v-for="(value) in stock ">
-        {{ name }} - ${{ value }}
-      </p>
-
+      <div class="" v-for="(value, index) in stock" :key="value">
+        {{ index }} - ${{ value }}
+      </div>
     </div>
   </div>
 </template>
@@ -14,7 +13,7 @@ export default {
   name: "StockPrice",
   props: {
     stock: Object,
-    name: toString()
+    // key: toString()
   }
 }
 </script>

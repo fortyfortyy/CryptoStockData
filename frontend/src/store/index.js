@@ -32,7 +32,7 @@ export default createStore({
             state.isAuthenticated = false
         },
 
-        removeTokenFromStorage(state) {
+        removeTokenFromStorage() {
             localStorage.removeItem('refresh')
             localStorage.removeItem('access')
         }

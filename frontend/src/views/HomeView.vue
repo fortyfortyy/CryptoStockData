@@ -29,7 +29,7 @@
 <script>
 
 export default {
-  name: 'Home',
+  name: 'HomeView',
   mounted() {
     document.title = 'Home | StockApp'
   },

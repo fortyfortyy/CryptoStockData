@@ -3,8 +3,8 @@
     <h1 class="title">Current Prices</h1>
     <div class="stock-data">
       <StockPrice
-          v-for="(stock, name) in latestCryptoPrices"
-          v-bind:name="name"
+          v-for="(stock) in latestCryptoPrices"
+          v-bind:key="stock"
           v-bind:stock="stock"
       />
     </div>
@@ -32,7 +32,7 @@ export default {
     document.title = 'Crypto Prices | StockApp'
 
     this.price_update_timer = setInterval(() => {
-      console.log('setuje crypto price timer')
+      console.log('Set timer to recieve stock data every 5 sec')
       this.getLatestCryptoPrices()
     }, 5000)
   },

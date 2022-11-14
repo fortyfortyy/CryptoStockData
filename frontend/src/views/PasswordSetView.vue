@@ -51,6 +51,7 @@ export default {
     }
   },
   mounted() {
+    this.checkIfAuthenticated()
     document.title = 'Set new password | StockApp'
   },
   methods: {
@@ -98,6 +99,11 @@ export default {
       console.log(currentURL)
       this.uidb = currentURL[3]
       this.token = currentURL[4]
+    },
+    checkIfAuthenticated() {
+      if (this.$store.state.isAuthenticated) {
+        router.push('/stocks')
+      }
     },
   }
 }

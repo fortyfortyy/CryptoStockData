@@ -52,7 +52,6 @@
 
 <script>
 import axios from 'axios'
-import {toast} from 'bulma-toast'
 import router from "@/router";
 
 export default {
@@ -65,6 +64,12 @@ export default {
       username: '',
       errors: []
     }
+  },
+  beforeCreate() {
+    this.checkIfAuthenticated()
+  },
+  mounted() {
+    document.title = 'Register | StockApp'
   },
   methods: {
     submitForm() {
@@ -92,8 +97,12 @@ export default {
         axios
             .post("/api/account/register/", formData)
             .then(response => {
-              this.errors.push('Please check your email to activate account.')
-              setTimeout( () => router.push('/login'), 5000)
+              if (response.status === 201) {
+                this.errors.push('Please check your email to activate account.')
+              } else {
+                this.errors.push('Something gone wrong...')
+              }
+              setTimeout(() => router.push('/login'), 5000)
 
             })
             .catch(error => {
@@ -108,6 +117,11 @@ export default {
                 console.log(JSON.stringify(error))
               }
             })
+      }
+    },
+    checkIfAuthenticated() {
+      if (this.$store.state.isAuthenticated) {
+        router.push('/stocks')
       }
     }
   }

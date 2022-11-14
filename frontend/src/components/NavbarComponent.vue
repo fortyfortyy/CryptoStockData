@@ -21,7 +21,7 @@
 import axios from "axios";
 
 export default {
-  name: "Navbar",
+  name: "NavbarView",
   methods: {
     logout() {
       axios.defaults.headers.common["Authorization"] = ""

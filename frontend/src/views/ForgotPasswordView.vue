@@ -33,6 +33,7 @@
 
 <script>
 import axios from 'axios'
+import router from "@/router";
 
 export default {
   name: 'ForgotPassword',
@@ -44,6 +45,7 @@ export default {
     }
   },
   mounted() {
+    this.checkIfAuthenticated()
     document.title = 'Forgot Password | StockApp'
   },
   methods: {
@@ -73,6 +75,11 @@ export default {
               console.log(JSON.stringify(error))
             }
           })
+    },
+    checkIfAuthenticated() {
+      if (this.$store.state.isAuthenticated) {
+        router.push('/stocks')
+      }
     }
   }
 }
@@ -115,7 +122,7 @@ export default {
 }
 
 
-.forgot-container .notification-success{
+.forgot-container .notification-success {
   color: darkgreen;
 }
 

@@ -51,6 +51,9 @@ export default {
       errors: []
     }
   },
+  beforeCreate() {
+    this.checkIfAuthenticated()
+  },
   mounted() {
     document.title = 'Log In | StockApp'
   },
@@ -89,6 +92,11 @@ export default {
               console.log(JSON.stringify(error))
             }
           })
+    },
+    checkIfAuthenticated() {
+      if (this.$store.state.isAuthenticated) {
+        router.push('/stocks')
+      }
     }
   }
 }

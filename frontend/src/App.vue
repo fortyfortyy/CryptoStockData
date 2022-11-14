@@ -1,18 +1,18 @@
 <script setup>
-import {RouterLink, RouterView} from 'vue-router'
-import Navbar from './components/Navbar.vue'
-import Footer from './components/Footer.vue'
+import {RouterView} from 'vue-router'
+import NavbarView from './components/NavbarComponent.vue'
+import FooterView from './components/Footer.vue'
 
 </script>
 
 <template>
-  <Navbar/>
+  <NavbarView/>
 
   <div class="main">
     <RouterView/>
   </div>
 
-  <Footer/>
+  <FooterView/>
 </template>
 
 <script>
