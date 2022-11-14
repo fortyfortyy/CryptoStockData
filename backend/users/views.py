@@ -22,8 +22,8 @@ class RegisterUserView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
 
-    # def get(self, request, *args, **kwargs):
-    #     return HttpResponseRedirect('/#/register')
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect('/sign-up')
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -44,7 +44,7 @@ class ForgotPasswordView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
-        return HttpResponseRedirect('/#/reset/password/')
+        return HttpResponseRedirect('/password/reset')
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -74,7 +74,7 @@ class SetPasswordView(generics.UpdateAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
-        return HttpResponseRedirect(f"/#/account/set/password/{kwargs['uidb64']}/{kwargs['token']}/")
+        return HttpResponseRedirect(f"/password/set/{kwargs['uidb64']}/{kwargs['token']}")
 
     def get_user(self, uidb64=None, queryset=None):
         if uidb64 is None or queryset is None:
@@ -127,8 +127,8 @@ class ActivateAccountView(generics.UpdateAPIView):
     queryset = UserProfile
     permission_classes = [permissions.AllowAny]
 
-    # def get(self, request, *args, **kwargs):
-    #     return HttpResponseRedirect(f"/#/account/activate/{kwargs['uidb64']}/{kwargs['token']}/")
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect(f"/activate/{kwargs['uidb64']}/{kwargs['token']}")
 
     def update(self, request, *args, **kwargs):
         try:
@@ -159,8 +159,8 @@ class CustomTokenObtainPairView(TokenViewBase):
     """
     serializer_class = CustomTokenObtainPairSerializer
 
-    # def get(self, request, *args, **kwargs):
-    #     return HttpResponseRedirect('/#/login')
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect('/login')
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -184,7 +184,7 @@ class CustomTokenRefreshView(TokenRefreshView):
     """
 
     def get(self, request, *args, **kwargs):
-        return HttpResponseRedirect('/#/404')
+        return HttpResponseRedirect('/404')
 
 
 custom_token_refresh_view = CustomTokenRefreshView.as_view()
