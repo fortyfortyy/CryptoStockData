@@ -1,7 +1,5 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.renderers import JSONRenderer
 from rest_framework_simplejwt.exceptions import AuthenticationFailed, InvalidToken, TokenError
 from rest_framework_simplejwt.views import TokenViewBase, TokenRefreshView
 
@@ -37,35 +35,30 @@ class RegisterUserView(generics.CreateAPIView):
 register_user_view = RegisterUserView.as_view()
 
 
-class ForgotPasswordView(generics.CreateAPIView):
+class ForgotPasswordView(generics.ListAPIView):
     """
     Search user by given email, then send reset link
     """
     model = UserProfile
     serializer_class = ForgotPasswordSerializer
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
         return HttpResponseRedirect('/#/reset/password/')
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid():
             email = serializer.validated_data['email']
-            try:
-                profile = self.model.objects.get(email=email)
-            except self.model.DoesNotExist:
-                profile = None
+            profile = self.model.objects.filter(email=email).first()
 
             if profile:
                 send_reset_password_email(profile)
 
-                return Response({'detail': 'Please check email for the next steps.'}, status=status.HTTP_200_OK,
-                                content_type='application/javascript')
-
-        headers = self.get_success_headers(serializer.data)
-        return Response({'detail': 'Please check email for the next steps.'}, status=status.HTTP_200_OK,
-                        headers=headers,
-                        content_type='application/javascript')
+        return Response({
+            'detail': 'If your email is associated with an account, '
+                      'you should recieve an email shortly with the next steps'
+        }, status=status.HTTP_200_OK, content_type='application/javascript')
 
 
 forgot_password_view = ForgotPasswordView.as_view()
@@ -78,6 +71,7 @@ class SetPasswordView(generics.UpdateAPIView):
     queryset = UserProfile
     token_generator = account_token
     serializer_class = ChangePasswordSerializer
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
         return HttpResponseRedirect(f"/#/account/set/password/{kwargs['uidb64']}/{kwargs['token']}/")
@@ -125,22 +119,22 @@ class SetPasswordView(generics.UpdateAPIView):
 set_password_view = SetPasswordView.as_view()
 
 
-class ActivateAccountView(APIView):
+class ActivateAccountView(generics.UpdateAPIView):
     """
     Checks whether the link is valid for the given user.
     Then activate account.
     """
-    model = UserProfile
-    renderer_classes = [JSONRenderer]
+    queryset = UserProfile
+    permission_classes = [permissions.AllowAny]
 
     # def get(self, request, *args, **kwargs):
     #     return HttpResponseRedirect(f"/#/account/activate/{kwargs['uidb64']}/{kwargs['token']}/")
 
-    def post(self, request, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
         try:
             uid = smart_str(urlsafe_base64_decode(kwargs.get('uidb64', None)))
-            profile = self.model.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, KeyError, self.model.DoesNotExist):
+            profile = self.queryset.objects.filter(pk=uid).first()
+        except (TypeError, ValueError, OverflowError, KeyError):
             profile = None
 
         if profile is not None and account_token.check_token(profile, kwargs.get('token', None)):
@@ -150,7 +144,7 @@ class ActivateAccountView(APIView):
             return Response({'account': 'Account has been activated!'}, status=status.HTTP_200_OK,
                             content_type='application/javascript')
 
-        content = {'account': 'Link is invalid or account is already activated'}
+        content = {'account': 'Account is already activated'}
         return Response(content, status=status.HTTP_400_BAD_REQUEST, content_type='application/javascript')
 
 
