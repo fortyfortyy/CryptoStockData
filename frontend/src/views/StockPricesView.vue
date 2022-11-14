@@ -2,11 +2,11 @@
   <div class="stock-prices-container">
     <h1 class="title">Current Prices</h1>
     <div class="stock-data">
-      <StockPrice
-          v-for="(stock) in latestCryptoPrices"
-          v-bind:key="stock"
-          v-bind:stock="stock"
-      />
+      <div class="stock-container" v-for="(value, key) in latestCryptoPrices" :key="value">
+        <div class="box">
+          {{ key }} - ${{ value.USD }}
+        </div>
+      </div>
     </div>
 
   </div>
@@ -14,7 +14,6 @@
 
 <script>
 import axios from 'axios'
-import StockPrice from '@/components/StockPrice.vue'
 import router from "@/router";
 
 export default {
@@ -23,9 +22,6 @@ export default {
     return {
       latestCryptoPrices: []
     }
-  },
-  components: {
-    StockPrice
   },
   mounted() {
     this.getLatestCryptoPrices()
@@ -49,7 +45,7 @@ export default {
       await axios
           .get('/api/stocks/')
           .then(response => {
-            if (response.status !== 200){
+            if (response.status !== 200) {
               this.$store.refreshToken()
             }
             this.latestCryptoPrices = response.data
@@ -91,4 +87,7 @@ export default {
   -webkit-text-fill-color: transparent;
 }
 
+.stock-container {
+  padding: 5px;
+}
 </style>
