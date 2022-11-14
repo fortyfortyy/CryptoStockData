@@ -1,12 +1,15 @@
 # Django + Vue CLI + Redis + Celery = Crypto Stock App
-This application shows the way how to work with Redis and Celery using Django DRF and Vue.js and Axios.
-The application has implemented views:
-- **register** the new account
-- **login** to the account
-- **forgot password**
-- **activate** an account
-- **set new** password
-- show crypto prices
+Application retrieve crypto data and shows it on the frontend (which is built by Vue.js) every 5 seconds. 
+The application uses Redis (for caching and celery tasks) and Celery (to asynchronous tasks), Axios, Django DRF, and PostgreSQL to store data. </br>
+<h4>Application has implemented:</h4>
+- **register** view
+- **login** view
+- **forgot password** view
+- **activate account** view
+- **reset password** view
+- crypto prices view
+
+## Below examples how the application looks like
 <div style="text-align: center">
 <img align="center" src="https://i.imgur.com/3unKU92.png" width="700">
 <p></p>
