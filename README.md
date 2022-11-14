@@ -4,9 +4,9 @@ The application uses Redis (for caching and celery tasks) and Celery (to asynchr
 ## Application has implemented:
 - register view
 - login view
-- forgot password** view
-- activate account** view
-- reset password** view
+- forgot password view
+- activate account view
+- reset password view
 - crypto prices view
 
 <h2 align="center"> Below examples how the application looks like </h2>
