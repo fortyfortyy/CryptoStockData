@@ -1,9 +1,10 @@
 import os
 
 from django.conf import settings
-from celery import Celery
 from stocks.utils import fetch_data_from_url, extract_data_from_url
+
 import redis
+from celery import Celery
 
 # set the default Django settings module for the 'celery' program.
 # this is also used in manage.py
@@ -37,15 +38,19 @@ def setup_periodic_tasks(sender, **kwargs):
 REDIS_INSTANCE = redis.StrictRedis(host=settings.REDIS_HOST,
                                    port=settings.REDIS_PORT, db=1)
 
+CRYPTO_API_KEY = settings.CRYPTO_API_KEY
 
 @app.task
 def get_stock_prices_task():
+    headers = {
+        'authorization': CRYPTO_API_KEY
+    }
     urls_to_check = [
         'https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH,DOME,BNB,SOL,FTT&tsyms=USD'
     ]
 
     for url in urls_to_check:
-        fetch_data = fetch_data_from_url(url)
+        fetch_data = fetch_data_from_url(url, headers)
         if fetch_data is None:
             continue
 
