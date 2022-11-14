@@ -1,9 +1,9 @@
-{% block subject %}Activate your account{% endblock %}
+{% block subject %}Activate your Crypto Stock account{% endblock %}
 {% block html %}
     <div style="background:linear-gradient(-90deg, #02203c, #001528); font-family: Lexend,sans-serif; color: #ffffff; display: grid; grid-template-rows: 0.5fr 1fr 0.5fr; padding: 50px;">
         <div style="color: #ffffff;">
             <p style="justify-content: center; padding-bottom: 30px"> Hi <strong
-                    style="font-size: 18px">{{ profile.first_name }}</strong></p>
+                    style="font-size: 18px">{{ profile.username|title }}</strong></p>
             <p>
                 You need to activate your account to be able using the application.
             </p>
@@ -22,14 +22,14 @@
                font-size: 15px;
                text-decoration: none;
                "
-               href="{{ domain }}{% url 'activate_account' uidb64=uid token=token %}"
+               href="http://{{ domain }}/activate/{{ uid }}/{{ token }}"
             >
                 Activate Account
             </a>
         </div>
 
         <div style="padding-top: 80px; color: #ffffff;">
-            <p>Best, <br> The MySimpleNotes Team</p>
+            <p>Best, <br> The Crypto Price Team</p>
         </div>
     </div>
 {% endblock %}
