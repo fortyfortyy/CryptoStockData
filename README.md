@@ -1,26 +1,27 @@
 # Django + Vue CLI + Redis + Celery = Crypto Stock App
 Application retrieve crypto data and shows it on the frontend (which is built by Vue.js) every 5 seconds. 
 The application uses Redis (for caching and celery tasks) and Celery (to asynchronous tasks), Axios, Django DRF, and PostgreSQL to store data. </br>
-<h4>Application has implemented:</h4>
-- **register** view
-- **login** view
-- **forgot password** view
-- **activate account** view
-- **reset password** view
+## Application has implemented:
+- register view
+- login view
+- forgot password** view
+- activate account** view
+- reset password** view
 - crypto prices view
 
-## Below examples how the application looks like
-<div style="text-align: center">
-<img align="center" src="https://i.imgur.com/3unKU92.png" width="700">
+<h2 align="center"> Below examples how the application looks like </h2>
+<div align="center">
+<img align="center" src="https://i.imgur.com/3unKU92.png" width="80%">
 <p></p>
-<img align="center" src="https://i.imgur.com/r0DmmN6.png" width="700">
+<img align="center" src="https://i.imgur.com/r0DmmN6.png" width="80%">
 <p></p>
-<img align="center" src="https://i.imgur.com/xjtGy6G.png" width="700">
+<img align="center" src="https://i.imgur.com/xjtGy6G.png" width="80%">
 <p></p>
-<img align="center" src="https://i.imgur.com/FfBwAqa.png" width="700">
+<img align="center" src="https://i.imgur.com/FfBwAqa.png" width="80%">
 <p></p>
-<img align="center" src="https://i.imgur.com/VJcIDQ1.png" width="700">
+<img align="center" src="https://i.imgur.com/VJcIDQ1.png" width="80%">
 </div>
+<br />
 
 > Crypto prices are **cached** using **Redis**. **Celery** is used to create asynchronous tasks to update prices. Any frontend request is served by axios. 
 
